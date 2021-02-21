@@ -1,0 +1,29 @@
+[
+  {
+    "color":"#010203",
+    "int":1,
+    "string":2
+  },
+  {
+    "color":123,
+    "int":"1",
+    "string":2
+  },
+  {
+    "color":"#030201",
+    "int":1,
+    "string":"string"
+  },
+  {
+    "color":"#010203",
+    "int":1,
+    "string":2,
+    "url":"https://google.com"
+  },
+  {
+    "color":"#010203",
+    "int":1,
+    "string":2,
+    "float":3.5
+  }
+]
