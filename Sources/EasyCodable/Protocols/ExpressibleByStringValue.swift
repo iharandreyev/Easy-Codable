@@ -37,17 +37,3 @@ public protocol ExpressibleByStringValue: CodableRawValueType {
 public extension ExpressibleByStringValue {
   func asString() -> String { "\(self)" }
 }
-
-public extension ExpressibleByStringValue where Self: Decodable {
-  static func extract(
-    from container: inout SingleValueDecodingContainer
-  ) throws -> Self {
-    try container.decode()
-  }
-}
-
-public extension ExpressibleByStringValue where Self: Encodable {
-  func insert(into container: inout SingleValueEncodingContainer) throws {
-    try container.encode(self)
-  }
-}

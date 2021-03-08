@@ -29,7 +29,7 @@
 import Foundation
 
 public protocol Recoverable: Decodable {
-  associatedtype DefaultValue: DefaultValueType
+  associatedtype DefaultValue: DefaultValueStrategy
 }
 
 public extension Recoverable {

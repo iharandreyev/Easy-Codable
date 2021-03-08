@@ -28,15 +28,15 @@
 
 import Foundation
 
-public protocol DefaultValueType {
+public protocol DefaultValueStrategy {
   associatedtype Value
   static var defaultValue: Value? { get }
 }
 
-public enum ZeroDefaultValue<Value: Zeroable>: DefaultValueType {
+public enum ZeroDefaultValue<Value: Zeroable>: DefaultValueStrategy {
   public static var defaultValue: Value? { .zero }
 }
 
-public enum NoneDefaultValue<Value>: DefaultValueType {
+public enum NoneDefaultValue<Value>: DefaultValueStrategy {
   public static var defaultValue: Value? { nil }
 }

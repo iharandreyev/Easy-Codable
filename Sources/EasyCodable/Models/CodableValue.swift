@@ -34,7 +34,7 @@ public typealias CodableValue<Value: CodableRawValueType> =
 @propertyWrapper
 public struct RecoverableCodableValue<
   Value: CodableRawValueType,
-  DefaultValue: DefaultValueType
+  DefaultValue: DefaultValueStrategy
 >:
   Recoverable where DefaultValue.Value == Value
 {
@@ -63,7 +63,7 @@ extension RecoverableCodableValue: Codable {
 
 // MARK: - Optional Decoding
 
-extension KeyedDecodingContainer {
+public extension KeyedDecodingContainer {
   func decode<V: ExpressibleByNilLiteral>(
     _ type: CodableValue<V>.Type,
     forKey key: K
