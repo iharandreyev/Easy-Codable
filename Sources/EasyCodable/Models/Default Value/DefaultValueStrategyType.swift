@@ -1,6 +1,6 @@
 //
-//  String+Extension.swift
-//  
+//  DefaultValueStrategyType.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,24 +23,13 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
 
-extension String: ExpressibleByStringValue {
-  public func asString() -> String { self }
-}
-
-extension String: CodableRawValueType {
-  public static func extract(
-    from container: inout SingleValueDecodingContainer
-  ) throws -> Self {
-    try container.decodeString()
-  }
+public protocol DefaultValueStrategyType {
+  associatedtype Value
   
-  public func insert(into container: inout SingleValueEncodingContainer) throws {
-    try container.encode(self)
-  }
+  static var value: Value { get }
 }
-

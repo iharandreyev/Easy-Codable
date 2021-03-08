@@ -1,5 +1,5 @@
 //
-//  CodableValue.swift
+//  UIColor+Extension.swift
 //  
 //  MIT License
 //
@@ -26,52 +26,34 @@
 //  Created by Ihar Andreyeu on 2/21/21.
 //
 
-import Foundation
+import UIKit
 
-public typealias CodableValue<Value: CodableRawValueType> =
-  RecoverableCodableValue<Value, NoneDefaultValue<Value>>
+// MARK: - RGBA
 
-@propertyWrapper
-public struct RecoverableCodableValue<
-  Value: CodableRawValueType,
-  DefaultValue: DefaultValueType
->:
-  Recoverable where DefaultValue.Value == Value
-{
-  public var wrappedValue: Value
+public extension UIColor {
+  convenience init(_ red: Int, _ green: Int, _ blue: Int, _ alpha: CGFloat = 1) throws {
+    try self.init(rgba: RGBA(red: red, green: green, blue: blue, alpha: alpha))
+  }
 
-  public init(wrappedValue: Value) {
-    self.wrappedValue = wrappedValue
+  convenience init(rgba: RGBA) {
+    self.init(
+      red: CGFloat(rgba.red) / 255,
+      green: CGFloat(rgba.green) / 255,
+      blue: CGFloat(rgba.blue) / 255,
+      alpha: rgba.alpha)
+  }
+
+  convenience init(hexString: String) throws {
+    try self.init(rgba: RGBA(hexString: hexString))
+  }
+
+  var rgba: RGBA {
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+    return try! RGBA(red: red, green: green, blue: blue, alpha: alpha)
   }
 }
-
-extension RecoverableCodableValue: Codable {
-  public init(from decoder: Decoder) throws {
-    var container = try decoder.singleValueContainer()
-    do {
-      wrappedValue = try Value.extract(from: &container)
-    } catch {
-      wrappedValue = try Self.recover(from: error)
-    }
-  }
-
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try wrappedValue.insert(into: &container)
-  }
-}
-
-// MARK: - Optional Decoding
-
-extension KeyedDecodingContainer {
-  func decode<V: ExpressibleByNilLiteral>(
-    _ type: CodableValue<V>.Type,
-    forKey key: K
-  ) throws -> CodableValue<V> {
-    guard let value = try decodeIfPresent(type, forKey: key) else {
-      return CodableValue(wrappedValue: nil)
-    }
-    return value
-  }
-}
-

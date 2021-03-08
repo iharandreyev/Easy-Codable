@@ -1,6 +1,6 @@
 //
-//  DefaultValueType.swift
-//  
+//  EncodableValue.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,20 +23,21 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
 
-public protocol DefaultValueType {
-  associatedtype Value
-  static var defaultValue: Value? { get }
-}
-
-public enum ZeroDefaultValue<Value: Zeroable>: DefaultValueType {
-  public static var defaultValue: Value? { .zero }
-}
-
-public enum NoneDefaultValue<Value>: DefaultValueType {
-  public static var defaultValue: Value? { nil }
+@propertyWrapper
+public struct EncodableValue<Value: EncodableRawValueType>: Encodable {
+  public var wrappedValue: Value
+  
+  public init(wrappedValue: Value) {
+    self.wrappedValue = wrappedValue
+  }
+  
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try wrappedValue.insert(into: &container)
+  }
 }

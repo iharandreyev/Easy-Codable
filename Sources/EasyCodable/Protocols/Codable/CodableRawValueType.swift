@@ -1,5 +1,5 @@
 //
-//  UIColor+Extension.swift
+//  CodableRawValueType.swift
 //  
 //  MIT License
 //
@@ -26,48 +26,6 @@
 //  Created by Ihar Andreyeu on 2/21/21.
 //
 
-import UIKit
+import Foundation
 
-// MARK: - RGBA
-
-public extension UIColor {
-  convenience init(_ red: Int, _ green: Int, _ blue: Int, _ alpha: CGFloat = 1) throws {
-    try self.init(rgba: RGBA(red: red, green: green, blue: blue, alpha: alpha))
-  }
-
-  convenience init(rgba: RGBA) {
-    self.init(
-      red: CGFloat(rgba.red) / 255,
-      green: CGFloat(rgba.green) / 255,
-      blue: CGFloat(rgba.blue) / 255,
-      alpha: rgba.alpha)
-  }
-
-  convenience init(hexString: String) throws {
-    try self.init(rgba: RGBA(hexString: hexString))
-  }
-
-  var rgba: RGBA {
-    var red: CGFloat = 0
-    var green: CGFloat = 0
-    var blue: CGFloat = 0
-    var alpha: CGFloat = 0
-    getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-
-    return try! RGBA(red: red, green: green, blue: blue, alpha: alpha)
-  }
-}
-
-// MARK: - CodableRawValueType
-
-extension UIColor: CodableRawValueType {
-  public static func extract(
-    from container: inout SingleValueDecodingContainer
-  ) throws -> Self {
-    try container.decodeColor() as! Self
-  }
-  
-  public func insert(into container: inout SingleValueEncodingContainer) throws {
-    try container.encode(rgba.shortHexString)
-  }
-}
+public typealias CodableRawValueType = DecodableRawValueType & EncodableRawValueType

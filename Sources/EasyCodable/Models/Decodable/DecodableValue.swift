@@ -1,6 +1,6 @@
 //
-//  Bool+Extension.swift
-//  
+//  CodableValue.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,13 +23,37 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
 
-extension Bool: ExpressibleByStringValue { }
+@propertyWrapper
+public struct DecodableValue<
+  Value: DecodableRawValueType
+>: Decodable {
+  public var wrappedValue: Value
+  
+  public init(wrappedValue: Value) {
+    self.wrappedValue = wrappedValue
+  }
+  
+  public init(from decoder: Decoder) throws {
+    var container = try decoder.singleValueContainer()
+    wrappedValue = try Value.extract(from: &container)
+  }
+}
 
-extension Bool: Zeroable {
-  public static var zero: Self { false }
+// MARK: - Optional
+
+public extension KeyedDecodingContainer {
+  func decode<V: ExpressibleByNilLiteral>(
+    _ type: DecodableValue<V>.Type,
+    forKey key: K
+  ) throws -> DecodableValue<V> {
+    guard let value = try decodeIfPresent(type, forKey: key) else {
+      return DecodableValue<V>(wrappedValue: nil)
+    }
+    return value
+  }
 }

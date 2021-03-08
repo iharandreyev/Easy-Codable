@@ -1,5 +1,5 @@
 //
-//  ExpressibleByStringValue.swift
+//  CodableValue.swift
 //  
 //  MIT License
 //
@@ -28,12 +28,39 @@
 
 import Foundation
 
-public protocol ExpressibleByStringValue: CodableRawValueType {
-  init?(_ string: String)
+@propertyWrapper
+public struct CodableValue<
+  Value: CodableRawValueType
+>:
+  Decodable, Encodable
+{
+  public var wrappedValue: Value
   
-  func asString() -> String
+  public init(wrappedValue: Value) {
+    self.wrappedValue = wrappedValue
+  }
+  
+  public init(from decoder: Decoder) throws {
+    var container = try decoder.singleValueContainer()
+    wrappedValue = try Value.extract(from: &container)
+  }
+  
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try wrappedValue.insert(into: &container)
+  }
 }
 
-public extension ExpressibleByStringValue {
-  func asString() -> String { "\(self)" }
+// MARK: - Optional
+
+public extension KeyedDecodingContainer {
+  func decode<V: ExpressibleByNilLiteral>(
+    _ type: CodableValue<V>.Type,
+    forKey key: K
+  ) throws -> CodableValue<V> {
+    guard let value = try decodeIfPresent(type, forKey: key) else {
+      return CodableValue(wrappedValue: nil)
+    }
+    return value
+  }
 }

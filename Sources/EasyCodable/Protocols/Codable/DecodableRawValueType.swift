@@ -1,6 +1,6 @@
 //
-//  MultipleRawTypesDecodable.swift
-//  
+//  DecodableRawValueType.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,40 +23,39 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
 
-public protocol MultipleRawTypesDecodable: Decodable {
-  associatedtype IntermediateValue
-  
-  static func createDecodingFunctions(
-    for container: SingleValueDecodingContainer,
-    userInfo: [CodingUserInfoKey: Any]
-  ) -> [() throws -> IntermediateValue]
-  
-  init(intermediateValue: IntermediateValue) throws
+public protocol DecodableRawValueType {
+  static func extract(
+    from container: inout SingleValueDecodingContainer
+  ) throws -> Self
 }
 
-public extension MultipleRawTypesDecodable {
-  init(from decoder: Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    
-    var decodingFunctions = Self.createDecodingFunctions(
-      for: container,
-      userInfo: decoder.userInfo)
-    
-    while let decodingFunction = decodingFunctions.removeFirstElement() {
-      do {
-        try self.init(intermediateValue: decodingFunction())
-        return
-      } catch DecodingError.typeMismatch {
-        guard decodingFunctions.isEmpty else { continue }
-      }
-    }
-    throw DecodingError.dataCorruptedError(
-      in: container,
-      debugDescription: "Can't decode \(Self.self)")
+// MARK: - Default Implimentations
+
+// MARK: Decodable
+
+public extension DecodableRawValueType
+  where Self: Decodable
+{
+  static func extract(
+    from container: inout SingleValueDecodingContainer
+  ) throws -> Self {
+    try container.decode(Self.self)
+  }
+}
+
+// MARK: ExpressibleByStringValue & Decodable
+ 
+public extension DecodableRawValueType
+  where Self: ExpressibleByStringValue & Decodable
+{
+  static func extract(
+    from container: inout SingleValueDecodingContainer
+  ) throws -> Self {
+    try container.decode()
   }
 }

@@ -1,6 +1,6 @@
 //
-//  ExpressibleByStringValue.swift
-//  
+//  DefaultValueStrategies.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,17 +23,23 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
 
-public protocol ExpressibleByStringValue: CodableRawValueType {
-  init?(_ string: String)
-  
-  func asString() -> String
+public enum ZeroDefaultValue<Value: Zeroable>: DefaultValueStrategyType {
+  public static var value: Value { .zero }
 }
 
-public extension ExpressibleByStringValue {
-  func asString() -> String { "\(self)" }
+public enum TrueDefaultValue: DefaultValueStrategyType {
+  public static var value: Bool { true }
+}
+
+public enum FalseDefaultValue: DefaultValueStrategyType {
+  public static var value: Bool { false }
+}
+
+public enum EmptyDefaultValue<Value: EmptiableCollection>: DefaultValueStrategyType {
+  public static var value: Value { .empty }
 }

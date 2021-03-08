@@ -1,5 +1,5 @@
 //
-//  ExpressibleByStringValue.swift
+//  MultipleRawTypesDecodable.swift
 //  
 //  MIT License
 //
@@ -28,12 +28,37 @@
 
 import Foundation
 
-public protocol ExpressibleByStringValue: CodableRawValueType {
-  init?(_ string: String)
+public protocol MultipleRawTypesDecodable: Decodable {
+  associatedtype IntermediateValue
   
-  func asString() -> String
+  static func createDecodingFunctions(
+    for container: SingleValueDecodingContainer,
+    userInfo: [CodingUserInfoKey: Any]
+  ) -> [() throws -> IntermediateValue]
+  
+  init(intermediateValue: IntermediateValue) throws
 }
 
-public extension ExpressibleByStringValue {
-  func asString() -> String { "\(self)" }
+// MARK: - Default Implimentation
+
+public extension MultipleRawTypesDecodable {
+  init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    
+    var decodingFunctions = Self.createDecodingFunctions(
+      for: container,
+      userInfo: decoder.userInfo)
+    
+    while let decodingFunction = decodingFunctions.removeFirstElement() {
+      do {
+        try self.init(intermediateValue: decodingFunction())
+        return
+      } catch DecodingError.typeMismatch {
+        guard decodingFunctions.isEmpty else { continue }
+      }
+    }
+    throw DecodingError.dataCorruptedError(
+      in: container,
+      debugDescription: "Can't decode \(Self.self)")
+  }
 }

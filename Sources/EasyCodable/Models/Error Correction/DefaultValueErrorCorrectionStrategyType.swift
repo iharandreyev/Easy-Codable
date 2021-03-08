@@ -1,6 +1,6 @@
 //
-//  Float+Extension.swift
-//  
+//  ErrorCorrectionStrategy.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,13 +23,20 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
 
-extension Float: ExpressibleByStringValue { }
-
-extension Float: Zeroable {
-  public static var zero: Self { 0 }
+public struct ErrorCorrectionStrategy<
+  DefaultValue: DefaultValueStrategyType
+>: ErrorCorrectionStrategyType {
+  public static func recover(from error: Error) throws -> DefaultValue.Value {
+    switch error {
+      case DecodingError.valueNotFound:
+        return DefaultValue.value
+      default:
+        throw error
+    }
+  }
 }

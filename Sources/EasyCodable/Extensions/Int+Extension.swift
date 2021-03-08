@@ -33,9 +33,3 @@ public extension Int {
     String(format:"%0\(digits)X", self)
   }
 }
-
-extension Int: ExpressibleByStringValue { }
-
-extension Int: Zeroable {
-  public static var zero: Self { 0 }
-}

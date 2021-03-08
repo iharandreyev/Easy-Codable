@@ -1,5 +1,5 @@
 //
-//  Optional+Extension.swift
+//  Zeroable+Extensions.swift
 //
 //  MIT License
 //
@@ -23,28 +23,29 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/25/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
+import CoreGraphics
 
-extension Optional: DecodableRawValueType where Wrapped: DecodableRawValueType {
-  public static func extract(
-    from container: inout SingleValueDecodingContainer
-  ) throws -> Self {
-    do {
-      return try Wrapped.extract(from: &container)
-    } catch DecodingError.valueNotFound {
-      return nil
-    }
-  }
+extension Bool: Zeroable {
+  public static var zero: Self { false }
 }
 
-extension Optional: EncodableRawValueType where Wrapped: EncodableRawValueType {
-  public func insert(into container: inout SingleValueEncodingContainer) throws {
-    guard case .some(let wrapped) = self else { return }
-    try wrapped.insert(into: &container)
-  }
+extension CGFloat: Zeroable {
+  public static var zero: Self { 0 }
 }
 
-extension Optional: CodableRawValueType where Wrapped: CodableRawValueType { }
+extension Double: Zeroable {
+  public static var zero: Self { 0 }
+}
+
+extension Float: Zeroable {
+  public static var zero: Self { 0 }
+}
+
+extension Int: Zeroable {
+  public static var zero: Self { 0 }
+}
+

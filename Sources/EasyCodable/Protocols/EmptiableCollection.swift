@@ -1,6 +1,6 @@
 //
-//  CGFloat+Extension.swift
-//  
+//  EmptiableCollection.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,18 +23,11 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
-import CoreGraphics
+import Foundation
 
-extension CGFloat: ExpressibleByStringValue {
-  public init?(_ string: String) {
-    guard let value = Double(string) else { return nil }
-    self.init(value)
-  }
-}
-
-extension CGFloat: Zeroable {
-  public static var zero: Self { 0 }
+public protocol EmptiableCollection: Collection {
+  static var empty: Self { get }
 }

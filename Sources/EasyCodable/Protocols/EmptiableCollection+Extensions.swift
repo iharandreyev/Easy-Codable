@@ -1,6 +1,6 @@
 //
-//  ExpressibleByStringValue.swift
-//  
+//  EmptiableCollection+Extensions.swift
+//
 //  MIT License
 //
 //  Copyright (c) 2021 Ihar Andreyeu
@@ -23,17 +23,23 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
-//  Created by Ihar Andreyeu on 2/21/21.
+//  Created by Ihar Andreyeu on 4/3/21.
 //
 
 import Foundation
 
-public protocol ExpressibleByStringValue: CodableRawValueType {
-  init?(_ string: String)
-  
-  func asString() -> String
+extension String: EmptiableCollection {
+  public static var empty: Self { "" }
 }
 
-public extension ExpressibleByStringValue {
-  func asString() -> String { "\(self)" }
+extension Array: EmptiableCollection {
+  public static var empty: Self { [] }
+}
+
+extension Dictionary: EmptiableCollection {
+  public static var empty: Self { [:] }
+}
+
+extension Set: EmptiableCollection {
+  public static var empty: Self { [] }
 }
