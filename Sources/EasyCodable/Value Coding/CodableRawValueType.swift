@@ -28,4 +28,46 @@
 
 import Foundation
 
+// MARK: - DecodableRawValueType
+
+public protocol DecodableRawValueType {
+  static func extract(
+    from container: inout SingleValueDecodingContainer
+  ) throws -> Self
+}
+
+public extension DecodableRawValueType
+where Self: Decodable
+{
+  static func extract(
+    from container: inout SingleValueDecodingContainer
+  ) throws -> Self {
+    try container.decode(Self.self)
+  }
+}
+
+public extension DecodableRawValueType
+where Self: ExpressibleByStringValue & Decodable
+{
+  static func extract(
+    from container: inout SingleValueDecodingContainer
+  ) throws -> Self {
+    try container.decode()
+  }
+}
+
+// MARK: - EncodableRawValueType
+
+public protocol EncodableRawValueType {
+  func insert(into container: inout SingleValueEncodingContainer) throws
+}
+
+public extension EncodableRawValueType where Self: Encodable {
+  func insert(into container: inout SingleValueEncodingContainer) throws {
+    try container.encode(self)
+  }
+}
+
+// MARK: - CodableRawValueType
+
 public typealias CodableRawValueType = DecodableRawValueType & EncodableRawValueType

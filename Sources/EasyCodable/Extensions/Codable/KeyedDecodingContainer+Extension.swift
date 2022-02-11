@@ -50,23 +50,17 @@ public extension KeyedDecodingContainer {
   ) throws -> T? {
     try decodeIfPresent(type, forKey: key)
   }
-}
-
-// MARK: - KeyedDecodingContainer + UIColor
-
-import UIKit
-
-public extension KeyedDecodingContainer {
-  func decodeColor(_ key: Key) throws -> UIColor {
-    try decode(ColorValue.self, forKey: key).color
-  }
-
-  func decodeColor(_ key: Key, defaultValue: UIColor) throws -> UIColor {
-    try decodeColorIfPresent(key) ?? defaultValue
-  }
-
-  func decodeColorIfPresent(_ key: Key) throws -> UIColor? {
-    try decodeIfPresent(ColorValue.self, forKey: key)?.color
+  
+  func decode<V>(
+    _ type: V.Type,
+    forKey key: K
+    defaultValue: V
+  ) throws -> V {
+    do {
+      return try decode(type, forKey: key)
+    } catch {
+      return defaultValue
+    }
   }
 }
 
@@ -94,13 +88,17 @@ public extension KeyedDecodingContainer {
   }
 }
 
-// MARK: - KeyedDecodingContainer + ExpressibleByStringValue
+// MARK: - UIColor
+
+
+
+// MARK: - ExpressibleByStringValue
 
 public extension KeyedDecodingContainer {
-  func decode<T: ExpressibleByStringValue & Decodable>(
-    _ key: Key,
-    as type: T.Type = T.self
-  ) throws -> T {
+  func decode<V: ExpressibleByStringValue>(
+    _ type: V.Type,
+    forKey key: K
+  ) throws -> V {
     do {
       return try decode(type, forKey: key)
     } catch DecodingError.typeMismatch {
@@ -115,23 +113,23 @@ public extension KeyedDecodingContainer {
       return value
     }
   }
-
-  func decode<T: ExpressibleByStringValue & Decodable>(
-    _ key: Key,
-    defaultValue: T,
-    as type: T.Type = T.self
-  ) throws -> T {
-    try decodeIfPresent(key, as: type) ?? defaultValue
-  }
-
-  func decodeIfPresent<T: ExpressibleByStringValue & Decodable>(
-    _ key: Key,
-    as type: T.Type = T.self
-  ) throws -> T? {
+  
+  func decodeIfPresent<V: ExpressibleByStringValue>(
+    _ type: V.Type,
+    forKey key: K
+  ) throws -> V? {
     do {
-      return try decode(key, as: type)
+      return try decode(type, forKey: k)
     } catch DecodingError.valueNotFound {
       return nil
     }
+  }
+
+  func decode<V: ExpressibleByStringValue>(
+    _ type: V.Type,
+    forKey key: K
+    defaultValue: V
+  ) throws -> V {
+    try decodeIfPresent(type, forKey: key) ?? defaultValue
   }
 }

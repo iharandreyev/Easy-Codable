@@ -29,11 +29,22 @@
 import Foundation
 
 public extension SingleValueDecodingContainer {
-  func decodeIfPresent<T: Decodable>(_ type: T.Type) throws -> T? {
+  func decodeIfPresent<V: Decodable>(_ type: V.Type) throws -> V? {
     do {
-      return try decode(T.self)
+      return try decode(V.self)
     } catch DecodingError.valueNotFound {
       return nil
+    }
+  }
+  
+  func decode<V>(
+    _ type: V.Type,
+    defaultValue: V
+  ) throws -> V {
+    do {
+      return try decode(type)
+    } catch {
+      return defaultValue
     }
   }
 }
@@ -42,19 +53,7 @@ public extension SingleValueDecodingContainer {
 
 import UIKit
 
-public extension SingleValueDecodingContainer {
-  func decodeColor() throws -> UIColor {
-    try decode(ColorValue.self).color
-  }
 
-  func decodeColor(defaultValue: UIColor) throws -> UIColor {
-    try decodeColorIfPresent() ?? defaultValue
-  }
-
-  func decodeColorIfPresent() throws -> UIColor? {
-    try decodeIfPresent(ColorValue.self)?.color
-  }
-}
 
 // MARK: - SingleValueDecodingContainer + String
 

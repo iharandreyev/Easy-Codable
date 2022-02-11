@@ -28,7 +28,7 @@
 
 import Foundation
 
-// MARK: - Optional
+// MARK: - Optional<Wrapped: DecodableRawValueType>
 
 extension Optional: DecodableRawValueType where Wrapped: DecodableRawValueType {
   public static func extract(
